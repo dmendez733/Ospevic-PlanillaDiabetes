@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLANILLA DIABETES OSPEVIC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .form-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .form-section {
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+        }
+        .section-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1f2937;
+            border-bottom: 2px solid #3b82f6; /* Blue accent */
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem; /* Smaller labels */
+        }
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group select,
+        .input-group input[type="date"] {
+            width: 100%;
+            padding: 0.65rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #3b82f6;
+            ring: 2px;
+            ring-color: #93c5fd;
+            outline: none;
+        }
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap; /* Prevent wrapping in cells */
+        }
+        th {
+            background-color: #eff6ff;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        /* Style for required fields that are invalid */
+        .input-error {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        .error-message-box {
+            border-left: 5px solid #ef4444;
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="form-container" id="form-container">
+        <h1 class="text-3xl font-extrabold text-center text-blue-800 mb-2">PLANILLA DIABETES OSPEVIC</h1>
+        <p class="text-center text-gray-600 mb-8 text-base">
+            Modelo de certificado para la acreditación de la condición de persona con diabetes mellitus.
+        </p>
+
+        <!-- Mensaje de Validación Personalizado (Hidden by default) -->
+        <div id="validation-message" class="error-message-box hidden">
+            <p class="font-bold mb-2">⚠️ Por favor, complete los siguientes campos obligatorios para continuar:</p>
+            <ul id="missing-fields-list" class="list-disc ml-5 text-sm">
+                <!-- Lista de campos faltantes se insertará aquí -->
+            </ul>
+        </div>
+
+        <!-- Sección de Datos Filiatorios -->
+        <div class="form-section">
+            <h2 class="section-title">DATOS FILIATORIOS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <div class="input-group md:col-span-2">
+                    <label for="nombre">Apellido y Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:col-span-2">
+                    <div class="input-group">
+                        <label for="edad">Edad:</label>
+                        <input type="number" id="edad" name="edad" min="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="genero">Género:</label>
+                        <select id="genero" name="genero" class="w-full" required>
+                            <option value="">Seleccione</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="dni">DNI:</label>
+                        <input type="text" id="dni" name="dni" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="fecha">Fecha:</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                    <label for="localidad">Localidad:</label>
+                    <input type="text" id="localidad" name="localidad" required>
+                </div>
+                <div class="input-group">
+                    <label for="tipo_diabetes">Tipo de diabetes mellitus:</label>
+                    <select id="tipo_diabetes" name="tipo_diabetes" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="Gestacional">Gestacional</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="anos_diagnostico">Años de diagnóstico de diabetes:</label>
+                <input type="number" id="anos_diagnostico" name="anos_diagnostico" min="0" required>
+            </div>
+        </div>
+
+        <!-- Sección de Datos del Examen Físico -->
+        <div class="form-section">
+            <h2 class="section-title">DATOS DEL EXAMEN FÍSICO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="input-group">
+                    <label for="peso">Peso (kg):</label>
+                    <input type="number" id="peso" name="peso" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="talla">Talla (m):</label>
+                    <input type="number" id="talla" name="talla" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="imc">IMC: <span class="text-xs text-gray-500">(Calculado)</span></label>
+                    <input type="text" id="imc" name="imc" readonly class="bg-gray-200">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="input-group">
+                    <label for="circunferencia_cintura">Circunferencia de Cintura (cm):</label>
+                    <input type="number" id="circunferencia_cintura" name="circunferencia_cintura" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="sensacion_protectora">Sensación Protectora:</label>
+                    <select id="sensacion_protectora" name="sensacion_protectora" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Presente">Presente</option>
+                        <option value="Ausente">Ausente</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Complicaciones -->
+        <div class="form-section">
+            <h2 class="section-title">COMPLICACIONES</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <div class="input-group">
+                    <label for="hipoglucemias">Hipoglucemias:</label>
+                    <select id="hipoglucemias" name="hipoglucemias" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                    <!-- Campo de especificación, no obligatorio a menos que se elija 'Sí' -->
+                    <input type="text" placeholder="Especificar si es leve o severa" class="mt-2" id="hipoglucemias_spec" disabled>
+                </div>
+                <div class="input-group">
+                    <label for="retinopatia">Retinopatía:</label>
+                    <select id="retinopatia" name="retinopatia" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="sin RD">Sin RD</option>
+                        <option value="RDNP">RDNP (Retinopatía Diabética No Proliferativa)</option>
+                        <option value="RDP">RDP (Retinopatía Diabética Proliferativa)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="input-group">
+                    <label for="nefropatia">Nefropatía:</label>
+                    <select id="nefropatia" name="nefropatia" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="neuropatia">Neuropatía:</label>
+                    <select id="neuropatia" name="neuropatia" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="macrovasculares">Macrovasculares:</label>
+                    <select id="macrovasculares" name="macrovasculares" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Comorbilidad -->
+        <div class="form-section">
+            <h2 class="section-title">COMORBILIDAD</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="input-group">
+                    <label for="hta">HTA (Hipertensión Arterial):</label>
+                    <select id="hta" name="hta" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="dislipidemia">Dislipidemia:</label>
+                    <select id="dislipidemia" name="dislipidemia" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="tabaquismo">Tabaquismo:</label>
+                    <select id="tabaquismo" name="tabaquismo" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Tratamiento -->
+        <div class="form-section">
+            <h2 class="section-title">DATOS REFERIDOS AL TRATAMIENTO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="input-group">
+                    <label for="alimentacion">Plan de alimentación saludable:</label>
+                    <select id="alimentacion" name="alimentacion" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="actividad_fisica">Actividad física:</label>
+                    <select id="actividad_fisica" name="actividad_fisica" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="educacion">Educación diabetológica:</label>
+                    <select id="educacion" name="educacion" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+            
+            <h3 class="text-lg font-bold text-gray-700 mt-6 mb-2">Fármacos <span class="text-sm font-normal text-gray-500">(Opcional)</span></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FÁRMACO</th>
+                            <th>PRESENTACIÓN</th>
+                            <th>DOSIS DIARIA</th>
+                            <th>AÑO DE INICIO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="farmacos-table-body">
+                        <!-- Nota: Los campos de esta tabla NO son obligatorios -->
+                        <tr>
+                            <td>Metformina</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Sulfonilureas (especificar cuál):</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>IDPP4 (especificar cuál):</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Pioglitazona</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>iSGLT2 (especificar cuál):</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Insulina basal</td>
+                            <td>
+                                <select class="w-full p-1 border-none rounded-none">
+                                    <option value="">Seleccione</option>
+                                    <option value="Vial">Vial</option>
+                                    <option value="Lapicera">Lapicera</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Insulina rápida</td>
+                            <td>
+                                <select class="w-full p-1 border-none rounded-none">
+                                    <option value="">Seleccione</option>
+                                    <option value="Vial">Vial</option>
+                                    <option value="Lapicera">Lapicera</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Otros</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                        <tr>
+                            <td>Otros</td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                            <td><input type="text" class="w-full p-1 border-none rounded-none" placeholder="..."></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Sección de Exámenes -->
+        <div class="form-section">
+            <h2 class="section-title">EXÁMENES (últimos 12 meses)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="input-group">
+                    <label for="hba1c">HbA1c:</label>
+                    <input type="text" id="hba1c" name="hba1c" required>
+                </div>
+                <div class="input-group">
+                    <label for="glucemia">Glucemia en ayunas:</label>
+                    <input type="text" id="glucemia" name="glucemia" required>
+                </div>
+                <div class="input-group">
+                    <label for="fondo_ojo">Fondo de ojo:</label>
+                    <select id="fondo_ojo" name="fondo_ojo" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Realizado">Realizado</option>
+                        <option value="No realizado">No realizado</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="alb_creatinina">Relación albúmina/creatinina en orina matinal:</label>
+                    <input type="text" id="alb_creatinina" name="alb_creatinina" required>
+                </div>
+                <div class="input-group">
+                    <label for="examen_pie_examenes">Examen de pie:</label>
+                    <select id="examen_pie_examenes" name="examen_pie_examenes" class="w-full" required>
+                        <option value="">Seleccione</option>
+                        <option value="Realizado">Realizado</option>
+                        <option value="No realizado">No realizado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center gap-4 mt-8">
+            <button id="downloadBtn" class="btn btn-primary">Descargar Datos en PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // Definición de campos con sus nombres legibles para la validación
+        const FIELD_MAP = [
+            // Datos Filiatorios
+            { id: 'nombre', name: 'Apellido y Nombre' },
+            { id: 'edad', name: 'Edad' },
+            { id: 'genero', name: 'Género' },
+            { id: 'dni', name: 'DNI' },
+            { id: 'fecha', name: 'Fecha' },
+            { id: 'localidad', name: 'Localidad' }, // NUEVO CAMPO
+            { id: 'tipo_diabetes', name: 'Tipo de diabetes mellitus' },
+            { id: 'anos_diagnostico', name: 'Años de diagnóstico' },
+            // Examen Físico
+            { id: 'peso', name: 'Peso (kg)' },
+            { id: 'talla', name: 'Talla (m)' },
+            { id: 'circunferencia_cintura', name: 'Circunferencia de Cintura' },
+            { id: 'sensacion_protectora', name: 'Sensación Protectora' },
+            // Complicaciones
+            { id: 'hipoglucemias', name: 'Hipoglucemias' },
+            { id: 'retinopatia', name: 'Retinopatía' },
+            { id: 'nefropatia', name: 'Nefropatía' },
+            { id: 'neuropatia', name: 'Neuropatía' },
+            { id: 'macrovasculares', name: 'Macrovasculares' },
+            // Comorbilidad
+            { id: 'hta', name: 'HTA' },
+            { id: 'dislipidemia', name: 'Dislipidemia' },
+            { id: 'tabaquismo', name: 'Tabaquismo' },
+            // Tratamiento (Planes)
+            { id: 'alimentacion', name: 'Plan de alimentación saludable' },
+            { id: 'actividad_fisica', name: 'Actividad física' },
+            { id: 'educacion', name: 'Educación diabetológica' },
+            // Exámenes
+            { id: 'hba1c', name: 'HbA1c' },
+            { id: 'glucemia', name: 'Glucemia en ayunas' },
+            { id: 'fondo_ojo', name: 'Fondo de ojo' },
+            { id: 'alb_creatinina', name: 'Relación albúmina/creatinina en orina' },
+            { id: 'examen_pie_examenes', name: 'Examen de pie' }
+        ];
+
+        // Elementos de la UI
+        const pesoInput = document.getElementById('peso');
+        const tallaInput = document.getElementById('talla');
+        const imcInput = document.getElementById('imc');
+        const hipoglucemiasSelect = document.getElementById('hipoglucemias');
+        const hipoglucemiasSpec = document.getElementById('hipoglucemias_spec');
+        const validationMessageBox = document.getElementById('validation-message');
+        const missingFieldsList = document.getElementById('missing-fields-list');
+
+        // --- Lógica de Utilidad ---
+
+        /**
+         * Calcula el IMC automáticamente (Peso / Talla^2).
+         */
+        function calculateIMC() {
+            const peso = parseFloat(pesoInput.value);
+            const talla = parseFloat(tallaInput.value);
+            
+            // Validar que los valores sean números positivos
+            if (peso > 0 && talla > 0) {
+                const imc = peso / (talla * talla);
+                imcInput.value = imc.toFixed(2);
+            } else {
+                imcInput.value = '';
+            }
+        }
+
+        /**
+         * Habilita/deshabilita el campo de especificación de hipoglucemias.
+         */
+        function toggleHipoglucemiasSpec() {
+            if (hipoglucemiasSelect.value === 'Si') {
+                hipoglucemiasSpec.disabled = false;
+                hipoglucemiasSpec.classList.remove('bg-gray-200');
+            } else {
+                hipoglucemiasSpec.disabled = true;
+                hipoglucemiasSpec.value = '';
+                hipoglucemiasSpec.classList.add('bg-gray-200');
+                hipoglucemiasSpec.classList.remove('input-error');
+            }
+        }
+
+        // --- Lógica de Validación ---
+
+        /**
+         * Valida todos los campos obligatorios y muestra un mensaje de error si es necesario.
+         * @returns {boolean} True si el formulario es válido, False en caso contrario.
+         */
+        function validateForm() {
+            const missingFields = [];
+            let isValid = true;
+
+            // 1. Limpiar estilos de error anteriores y verificar campos principales
+            FIELD_MAP.forEach(field => {
+                const input = document.getElementById(field.id);
+                if (!input) return;
+
+                // Limpiar estilo anterior
+                input.classList.remove('input-error');
+
+                // Validar campos que no sean 'Seleccione' o cadena vacía
+                if (input.value === '' || input.value === 'Seleccione') {
+                    if (field.id !== 'imc') { // IMC no es obligatorio
+                        missingFields.push(field.name);
+                        input.classList.add('input-error');
+                        isValid = false;
+                    }
+                }
+            });
+
+            // 2. Verificar campo condicional: Hipoglucemias (especificación)
+            hipoglucemiasSpec.classList.remove('input-error');
+            if (hipoglucemiasSelect.value === 'Si' && hipoglucemiasSpec.value.trim() === '') {
+                missingFields.push('Hipoglucemias (Especificación: leve o severa)');
+                hipoglucemiasSpec.classList.add('input-error');
+                isValid = false;
+            }
+
+            // 3. Mostrar/Ocultar mensaje de validación
+            if (missingFields.length > 0) {
+                missingFieldsList.innerHTML = missingFields.map(name => `<li>• ${name}</li>`).join('');
+                validationMessageBox.classList.remove('hidden');
+                // Desplazarse al inicio de la página para que el usuario vea el error
+                document.getElementById('form-container').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            } else {
+                validationMessageBox.classList.add('hidden');
+                return true;
+            }
+        }
+
+
+        // --- Lógica de Generación de PDF ---
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (!validateForm()) {
+                // Si la validación falla, detenemos la generación del PDF.
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Definir un punto de partida y espaciado
+            let y = 10;
+            const margin = 15;
+            const lineHeight = 7;
+            const titleFontSize = 18;
+            const subtitleFontSize = 12;
+            const sectionTitleFontSize = 14;
+            const labelFontSize = 10;
+            const valueFontSize = 10;
+
+            // Título
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(titleFontSize);
+            doc.text('PLANILLA DIABETES OSPEVIC', doc.internal.pageSize.getWidth() / 2, y, { align: 'center' });
+            y += lineHeight;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(subtitleFontSize);
+            doc.text('Modelo de certificado para la acreditación de la condición de persona con diabetes mellitus.', doc.internal.pageSize.getWidth() / 2, y, { align: 'center' });
+            y += lineHeight * 2;
+
+            // Función para añadir una nueva página si es necesario
+            function addPageIfNeeded() {
+                if (y > 280) { // Altura máxima de la página A4
+                    doc.addPage();
+                    y = 10;
+                }
+            }
+
+            // --- 1. Datos Filiatorios ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('DATOS FILIATORIOS', margin, y);
+            y += lineHeight;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            
+            const nombre = document.getElementById('nombre').value || 'N/A';
+            const dni = document.getElementById('dni').value || 'N/A';
+            const edad = document.getElementById('edad').value || 'N/A';
+            const genero = document.getElementById('genero').value || 'N/A';
+            const fecha = document.getElementById('fecha').value || 'N/A';
+            const localidad = document.getElementById('localidad').value || 'N/A'; // NUEVO
+            const tipoDiabetes = document.getElementById('tipo_diabetes').value || 'N/A';
+            const anosDiagnostico = document.getElementById('anos_diagnostico').value || 'N/A';
+            
+            // Fila 1: Nombre y Localidad
+            doc.text(`Apellido y Nombre:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(nombre, margin + 45, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Localidad:`, margin + 110, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(localidad, margin + 135, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+
+            // Fila 2: Edad, Género, DNI, Fecha
+            doc.text(`Edad:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(edad, margin + 20, y);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`Género:`, margin + 45, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(genero, margin + 70, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`DNI:`, margin + 110, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(dni, margin + 125, y);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`Fecha:`, margin + 155, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(fecha, margin + 175, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+
+            // Fila 3: Tipo de Diabetes, Años de Diagnóstico
+            doc.text(`Tipo de diabetes mellitus:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(tipoDiabetes, margin + 60, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Años de diagnóstico:`, margin + 100, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(anosDiagnostico, margin + 145, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+
+            addPageIfNeeded();
+
+            // --- 2. Datos del Examen Físico ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('DATOS DEL EXAMEN FÍSICO', margin, y);
+            y += lineHeight;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            const peso = document.getElementById('peso').value || 'N/A';
+            const talla = document.getElementById('talla').value || 'N/A';
+            const imc = document.getElementById('imc').value || 'N/A';
+            const circCintura = document.getElementById('circunferencia_cintura').value || 'N/A';
+            const sensacionProtectora = document.getElementById('sensacion_protectora').value || 'N/A';
+
+            doc.text(`Peso (kg):`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(peso, margin + 25, y);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`Talla (m):`, margin + 60, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(talla, margin + 85, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`IMC:`, margin + 120, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(imc, margin + 135, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+            
+            doc.text(`Circunferencia de Cintura (cm):`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(circCintura, margin + 70, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Sensación Protectora:`, margin + 120, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(sensacionProtectora, margin + 165, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+            
+            addPageIfNeeded();
+
+            // --- 3. Complicaciones ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('COMPLICACIONES', margin, y);
+            y += lineHeight;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            const hipoglucemias = document.getElementById('hipoglucemias').value || 'N/A';
+            const hipoglucemiasSpec = document.getElementById('hipoglucemias_spec').value || '';
+            const retinopatia = document.getElementById('retinopatia').value || 'N/A';
+            const nefropatia = document.getElementById('nefropatia').value || 'N/A';
+            const neuropatia = document.getElementById('neuropatia').value || 'N/A';
+            const macrovasculares = document.getElementById('macrovasculares').value || 'N/A';
+
+            doc.text(`Hipoglucemias:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${hipoglucemias} ${hipoglucemiasSpec ? `(${hipoglucemiasSpec})` : ''}`, margin + 35, y);
+            doc.setFont('helvetica', 'normal');
+
+            doc.text(`Retinopatía:`, margin + 100, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(retinopatia, margin + 130, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+            
+            doc.text(`Nefropatía:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(nefropatia, margin + 30, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Neuropatía:`, margin + 60, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(neuropatia, margin + 90, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Macrovasculares:`, margin + 120, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(macrovasculares, margin + 160, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+
+            addPageIfNeeded();
+            
+            // --- 4. Comorbilidad ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('COMORBILIDAD', margin, y);
+            y += lineHeight;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            const hta = document.getElementById('hta').value || 'N/A';
+            const dislipidemia = document.getElementById('dislipidemia').value || 'N/A';
+            const tabaquismo = document.getElementById('tabaquismo').value || 'N/A';
+
+            doc.text(`HTA:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(hta, margin + 20, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Dislipidemia:`, margin + 60, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(dislipidemia, margin + 95, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Tabaquismo:`, margin + 130, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(tabaquismo, margin + 160, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+            
+            addPageIfNeeded();
+
+            // --- 5. Datos del Tratamiento (Planes) ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('DATOS REFERIDOS AL TRATAMIENTO', margin, y);
+            y += lineHeight;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            const alimentacion = document.getElementById('alimentacion').value || 'N/A';
+            const actividadFisica = document.getElementById('actividad_fisica').value || 'N/A';
+            const educacion = document.getElementById('educacion').value || 'N/A';
+
+            doc.text(`Plan de alimentación saludable:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(alimentacion, margin + 75, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+            
+            doc.text(`Actividad física:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(actividadFisica, margin + 40, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Educación diabetológica:`, margin + 80, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(educacion, margin + 140, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+            
+            addPageIfNeeded();
+
+            // --- 6. Fármacos (Tabla) ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(subtitleFontSize);
+            doc.text('Fármacos', margin, y);
+            y += lineHeight;
+
+            const tableHeaders = ['FÁRMACO', 'PRESENTACIÓN', 'DOSIS DIARIA', 'AÑO DE INICIO'];
+            const columnWidths = [50, 45, 45, 40]; // Anchos de columna en mm
+            let currentX = margin;
+
+            // Dibujar encabezados y bordes
+            doc.setFontSize(labelFontSize);
+            for (let i = 0; i < tableHeaders.length; i++) {
+                doc.rect(currentX, y, columnWidths[i], lineHeight);
+                doc.text(tableHeaders[i], currentX + 2, y + lineHeight / 2, { baseline: 'middle' });
+                currentX += columnWidths[i];
+            }
+            y += lineHeight; // Espacio después de los encabezados
+
+            // Dibujar filas de datos
+            const farmacosTable = document.getElementById('farmacos-table-body');
+            const rows = farmacosTable.querySelectorAll('tr');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(valueFontSize);
+
+            rows.forEach(row => {
+                addPageIfNeeded();
+                currentX = margin;
+                const cells = row.querySelectorAll('td');
+                const farmaco = cells[0].textContent.trim();
+                
+                // Extraer el valor del input o select dentro de la celda
+                const getCellValue = (cell) => {
+                    const input = cell.querySelector('input');
+                    const select = cell.querySelector('select');
+                    if (input) return input.value || '';
+                    if (select) return select.value || '';
+                    return cell.textContent.trim();
+                };
+
+                const presentacion = getCellValue(cells[1]);
+                const dosis = getCellValue(cells[2]);
+                const anio = getCellValue(cells[3]);
+
+                const rowData = [farmaco, presentacion, dosis, anio];
+
+                // Solo dibujar filas si tienen algún dato (para ahorrar espacio si están vacías)
+                if (presentacion || dosis || anio) {
+                    for (let i = 0; i < rowData.length; i++) {
+                        doc.rect(currentX, y, columnWidths[i], lineHeight);
+                        doc.text(rowData[i], currentX + 2, y + lineHeight / 2, { baseline: 'middle' });
+                        currentX += columnWidths[i];
+                    }
+                    y += lineHeight;
+                }
+            });
+            y += lineHeight;
+            
+            addPageIfNeeded();
+
+            // --- 7. Exámenes ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(sectionTitleFontSize);
+            doc.text('EXÁMENES (últimos 12 meses)', margin, y);
+            y += lineHeight;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(labelFontSize);
+            const hba1c = document.getElementById('hba1c').value || 'N/A';
+            const glucemia = document.getElementById('glucemia').value || 'N/A';
+            const fondoOjo = document.getElementById('fondo_ojo').value || 'N/A';
+            const albCreatinina = document.getElementById('alb_creatinina').value || 'N/A';
+            const examenPie = document.getElementById('examen_pie_examenes').value || 'N/A';
+            
+            doc.text(`HbA1c:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(hba1c, margin + 20, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Glucemia en ayunas:`, margin + 60, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(glucemia, margin + 105, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+            
+            doc.text(`Fondo de ojo:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(fondoOjo, margin + 35, y);
+            doc.setFont('helvetica', 'normal');
+            
+            doc.text(`Relación albúmina/creatinina en orina matinal:`, margin + 70, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(albCreatinina, margin + 175, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight;
+            
+            doc.text(`Examen de pie:`, margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(examenPie, margin + 40, y);
+            doc.setFont('helvetica', 'normal');
+            y += lineHeight * 2;
+
+            // Finalizar con espacio para firma
+            doc.text('________________________________', doc.internal.pageSize.getWidth() / 4, y + 20, { align: 'center' });
+            doc.text('Firma y Sello del Médico', doc.internal.pageSize.getWidth() / 4, y + 25, { align: 'center' });
+
+
+            doc.save('planilla_diabetes_ospevic.pdf');
+        });
+
+        // --- Inicialización de Eventos ---
+
+        // Escucha cambios en Peso y Talla para calcular IMC
+        pesoInput.addEventListener('input', calculateIMC);
+        tallaInput.addEventListener('input', calculateIMC);
+        // Inicializa el campo de especificación de hipoglucemias
+        hipoglucemiasSelect.addEventListener('change', toggleHipoglucemiasSpec);
+
+        // Inicializar el estado de la especificación al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleHipoglucemiasSpec();
+        });
+
+    </script>
+</body>
+</html>
